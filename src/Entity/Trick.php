@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TrickRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +42,11 @@ class Trick
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
     private $updateAt;
+
+	public function __construct()
+	{
+		$this->createdAt = new DateTimeImmutable();
+	}
 
     public function getId(): ?int
     {

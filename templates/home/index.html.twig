@@ -4,6 +4,7 @@
 
 {% block body %}
 	{% for trick in tricks %}
-		{{ trick.name }} <br>
+<a href="{{ path('trick_show', {'id': trick.id}) }}">{{ trick.name }}</a><br>
+
 	{% endfor %}
 {% endblock %}
