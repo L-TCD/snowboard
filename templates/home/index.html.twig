@@ -3,7 +3,7 @@
 {% block title %}Hello HomeController!{% endblock %}
 
 {% block body %}
-	{% for letter in letters %}
-	{{ letter }} <br>
+	{% for trick in tricks %}
+		{{ trick.name }} <br>
 	{% endfor %}
 {% endblock %}
