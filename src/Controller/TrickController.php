@@ -35,7 +35,7 @@ class TrickController extends AbstractController
 			$images = $form->get('images')->getData();
 
 			foreach($images as $image){
-				$file = md5(uniqid()) . '.' . $image->guessExtension();
+				$file = md5(uniqid()).'.'.$image->guessExtension();
 				$image->move(
 					$this->getParameter('images_directory'),
 					$file
@@ -74,6 +74,20 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+			$images = $form->get('images')->getData();
+
+			foreach ($images as $image) {
+				$file = md5(uniqid()) . '.' . $image->guessExtension();
+				$image->move(
+					$this->getParameter('images_directory'),
+					$file
+				);
+
+				$img = new Image();
+				$img->setName($file);
+				$trick->addImage($img);
+			}
+
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('trick_index', [], Response::HTTP_SEE_OTHER);
@@ -104,14 +118,19 @@ class TrickController extends AbstractController
 	{
 		$data = json_decode($request->getContent(), true);
 
-		if($this->isCsrfTokenValid('delete'.$image->getId(), $data['_token'])) {
-			$name = $image->getName();
-			unlink($this->getParameter('image_directory').'/'.$name);
+		// On vérifie si le token est valide
+		if($this->isCsrfTokenValid('delete'.$image->getId(), $data['_token'])){
+			// On récupère le nom de l'image
+			$fileName = $image->getName();
+			// On supprime le fichier
+			unlink($this->getParameter('images_directory').'/'.$fileName);
 
+			// On supprime l'entrée de la base
 			$em = $this->getDoctrine()->getManager();
 			$em->remove($image);
 			$em->flush();
 
+			// On répond en json
 			return new JsonResponse(['success' => 1]);
 		} else {
 			return new JsonResponse(['error' => 'Token Invalide'], 400);
