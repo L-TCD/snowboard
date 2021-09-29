@@ -11,7 +11,12 @@
 			{% for trick in tricks %}
 				<div class="col">
 					<div class="card text-center h-100">
-						<img src="{{ asset('images/fig.jpg') }}" class="card-img-top" alt="..."/>
+						{% for image in trick.images %}
+							{% if loop.first %}
+								<img src="{{ asset('uploads/' ~ image.name) }}" class="card-img-top" alt="..."/>
+							{% endif %}
+						{% endfor %}
+
 						<div class="card-body">
 							<a href="{{ path('trick_show', {'id': trick.id}) }}">{{ trick.name }}</a><br>
 						</div>
