@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Image;
 use App\Entity\Trick;
 use App\Form\TrickType;
 use App\Repository\TrickRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -29,6 +31,21 @@ class TrickController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+			$images = $form->get('images')->getData();
+
+			foreach($images as $image){
+				$file = md5(uniqid()) . '.' . $image->guessExtension();
+				$image->move(
+					$this->getParameter('images_directory'),
+					$file
+				);
+
+				$img = new Image();
+				$img->setName($file);
+				$trick->addImage($img);
+			}
+
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($trick);
             $entityManager->flush();
@@ -79,4 +96,25 @@ class TrickController extends AbstractController
 
         return $this->redirectToRoute('trick_index', [], Response::HTTP_SEE_OTHER);
     }
+
+	/**
+	 * @Route("/delete/image/{id}", name="trick_delete_image", methods={"DELETE"})
+	 */
+	public function deleteImage(Image $image, Request $request)
+	{
+		$data = json_decode($request->getContent(), true);
+
+		if($this->isCsrfTokenValid('delete'.$image->getId(), $data['_token'])) {
+			$name = $image->getName();
+			unlink($this->getParameter('image_directory').'/'.$name);
+
+			$em = $this->getDoctrine()->getManager();
+			$em->remove($image);
+			$em->flush();
+
+			return new JsonResponse(['success' => 1]);
+		} else {
+			return new JsonResponse(['error' => 'Token Invalide'], 400);
+		}
+	}
 }
