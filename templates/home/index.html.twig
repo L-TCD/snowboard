@@ -13,10 +13,11 @@
 					<div class="card text-center h-100">
 						{% for image in trick.images %}
 							{% if loop.first %}
-								<img src="{{ asset('uploads/' ~ image.name) }}" class="card-img-top" alt="..."/>
+								<div class="embed-responsive embed-responsive-16by9">
+									<img src="{{ asset('uploads/' ~ image.name) }}" class="card-img-top embed-responsive-item" alt="illustration figure" />					
+								</div>
 							{% endif %}
 						{% endfor %}
-
 						<div class="card-body">
 							<a href="{{ path('trick_show', {'id': trick.id}) }}">{{ trick.name }}</a><br>
 						</div>
