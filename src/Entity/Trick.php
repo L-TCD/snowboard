@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\TrickRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -43,10 +45,16 @@ class Trick
      */
     private $updateAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Image::class, mappedBy="trick", orphanRemoval=true, cascade={"persist"})
+     */
+    private $images;
+
 	public function __construct()
-	{
-		$this->createdAt = new DateTimeImmutable();
-	}
+                     	{
+                     		$this->createdAt = new DateTimeImmutable();
+                       $this->images = new ArrayCollection();
+                     	}
 
     public function getId(): ?int
     {
@@ -109,6 +117,36 @@ class Trick
     public function setUpdateAt(?\DateTimeImmutable $updateAt): self
     {
         $this->updateAt = $updateAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Image[]
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setTrick($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getTrick() === $this) {
+                $image->setTrick(null);
+            }
+        }
 
         return $this;
     }

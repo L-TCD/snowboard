@@ -2,12 +2,15 @@
 
 {% block title %}Edit Trick{% endblock %}
 
-{% block body %}
-    <h1>Edit Trick</h1>
+{% block main %}
+	<div class="container-fluid p-5">
+		<h1>Edit Trick</h1>
+		{{ include('trick/_form.html.twig', {'button_label': 'Update'}) }}
+		<a href="{{ path('trick_index') }}">back to list</a>
+		{{ include('trick/_delete_form.html.twig') }}
+	</div>
+{% endblock %}
 
-    {{ include('trick/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('trick_index') }}">back to list</a>
-
-    {{ include('trick/_delete_form.html.twig') }}
+{% block javascripts %}
+	<script src="{{ asset('js/images.js') }}"></script>
 {% endblock %}
