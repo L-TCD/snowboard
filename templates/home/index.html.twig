@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Page d'accueil{% endblock %}
+{% block title %}Page d'accueil
+{% endblock %}
 
 {% block main %}
 	<div style="background: url({{ asset('images/fig.jpg') }}) no-repeat;background-size:cover;height:calc(100vh - 6.4rem);" class="d-flex align-items-center">
@@ -14,12 +15,12 @@
 						{% for image in trick.images %}
 							{% if loop.first %}
 								<div class="embed-responsive embed-responsive-16by9">
-									<img src="{{ asset('uploads/' ~ image.name) }}" class="card-img-top embed-responsive-item" alt="illustration figure" />					
+									<img src="{{ asset('uploads/' ~ image.name) }}" class="card-img-top embed-responsive-item" alt="illustration figure"/>
 								</div>
 							{% endif %}
 						{% endfor %}
 						<div class="card-body">
-							<a href="{{ path('trick_show', {'id': trick.id}) }}">{{ trick.name }}</a><br>
+							<a href="{{ path('slug_trick', {'slug': trick.slug}) }}">{{ trick.name }}</a><br>
 						</div>
 					</div>
 				</div>
