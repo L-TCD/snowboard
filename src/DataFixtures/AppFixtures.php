@@ -2,24 +2,56 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Image;
 use Faker\Factory;
+use App\Entity\User;
+use App\Entity\Image;
 use App\Entity\Trick;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppFixtures extends Fixture
 {
 	protected $slugger;
+	protected $encoder;
 
-	public function __construct(SluggerInterface $slugger)
+
+	public function __construct(SluggerInterface $slugger, UserPasswordHasherInterface $encoder)
 	{
 		$this->slugger = $slugger;
+		$this->encoder = $encoder;
 	}
 	public function load(ObjectManager $manager)
 	{
 		$faker = Factory::create('fr_FR');
+
+		$admin = new User();
+
+		$hash = $this->encoder->hashPassword($admin, "password");
+
+		$admin
+			->setEmail("admin@gmail.com")
+			->setPassword($hash)
+			->setRoles(['ROLE_ADMIN']);
+
+		$manager->persist($admin);
+
+		$users = [];
+
+		for ($u = 0; $u < 5; $u++) {
+			$user = new User();
+
+			$hash = $this->encoder->hashPassword($user, "password");
+
+			$user
+				->setEmail("user$u@gmail.com")
+				->setPassword($hash);
+
+			$users[] = $user;
+
+			$manager->persist($user);
+		}
 
 		for ($i = 0; $i < 20; $i++) {
 			$trick = new Trick();
